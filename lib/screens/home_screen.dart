@@ -318,16 +318,12 @@ class _HomeScreenState extends State<HomeScreen> {
         }
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Container(
-            height: 132,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.champagne,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Center(
-                child: Text('No summary available.',
-                    style: theme.textTheme.bodyMedium)),
+          return _EmptyState(
+            title: 'No summary yet',
+            subtitle: 'Start scanning skin lesions to see a health summary.',
+            asset: 'assets/images/empty_summary.png',
+            onAction: () => context.read<AppProvider>().changeTab(1),
+            actionLabel: 'Start Scan',
           );
         }
 
@@ -454,8 +450,13 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Center(child: Text('Could not load doctors.')));
         }
         if (!doctorsSnapshot.hasData || doctorsSnapshot.data!.isEmpty) {
-          return const SizedBox(
-              height: 160, child: Center(child: Text('No doctors available.')));
+          return _EmptyState(
+            title: 'No consultations',
+            subtitle: 'Book an appointment with a dermatologist.',
+            asset: 'assets/images/empty_consult.png',
+            onAction: () => Navigator.pushNamed(context, '/book'),
+            actionLabel: 'Book Now',
+          );
         }
 
         final allDoctors = doctorsSnapshot.data!;
@@ -613,7 +614,13 @@ class _HomeScreenState extends State<HomeScreen> {
           return const Center(child: Text('Could not load history.'));
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No scan history yet.'));
+          return _EmptyState(
+            title: 'No history',
+            subtitle: 'Your previous scans will appear here.',
+            asset: 'assets/images/empty_history.png',
+            onAction: () => context.read<AppProvider>().changeTab(1),
+            actionLabel: 'Scan Now',
+          );
         }
 
         final latestRecords = snapshot.data!.take(5).toList();
@@ -744,6 +751,9 @@ class _ConsultationCard extends StatelessWidget {
             : theme.cardTheme.color,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.primary.withOpacity(0.5)),
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: const Offset(0, 2)),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -786,6 +796,73 @@ class _ConsultationCard extends StatelessWidget {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Reusable empty‑state widget used throughout HomeScreen when a stream has no data.
+// ---------------------------------------------------------------------------
+class _EmptyState extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String asset; // path to PNG/SVG asset
+  final VoidCallback? onAction;
+  final String? actionLabel;
+
+  const _EmptyState({
+    required this.title,
+    required this.subtitle,
+    required this.asset,
+    this.onAction,
+    this.actionLabel,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.grey.shade100, Colors.grey.shade200],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: const Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+  
+          const SizedBox(height: 12),
+          Text(title,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
+              )),
+          const SizedBox(height: 4),
+          Text(subtitle,
+              style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
+              textAlign: TextAlign.center),
+          if (onAction != null && actionLabel != null) ...[
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: onAction,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                foregroundColor: theme.colorScheme.primary,
+                side: BorderSide(color: theme.colorScheme.primary),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                elevation: 0,
+              ),
+              child: Text(actionLabel!),
+            ),
+          ],
         ],
       ),
     );
