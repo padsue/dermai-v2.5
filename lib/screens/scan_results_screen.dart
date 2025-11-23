@@ -362,14 +362,22 @@ class _ScanResultsScreenState extends State<ScanResultsScreen> {
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                           ),
-                                          const SizedBox(height: 4),
+                                          const SizedBox(height: 8),
                                           Row(
                                             children: [
+                                              Text(
+                                                'Severity: ',
+                                                style: theme.textTheme.bodySmall
+                                                    ?.copyWith(
+                                                  color: Colors.grey[700],
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
                                               Container(
                                                 padding:
                                                     const EdgeInsets.symmetric(
-                                                        horizontal: 8,
-                                                        vertical: 4),
+                                                        horizontal: 10,
+                                                        vertical: 5),
                                                 decoration: BoxDecoration(
                                                   color: _getSeverityColor(
                                                       severityInfo.severity),
@@ -386,14 +394,41 @@ class _ScanResultsScreenState extends State<ScanResultsScreen> {
                                                   ),
                                                 ),
                                               ),
-                                              const SizedBox(width: 8),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Row(
+                                            children: [
                                               Text(
-                                                '${(result.topDiseaseConfidence * 100).toStringAsFixed(1)}%',
-                                                style: theme
-                                                    .textTheme.bodyMedium
+                                                'Confidence: ',
+                                                style: theme.textTheme.bodySmall
                                                     ?.copyWith(
-                                                  color: AppColors.primary,
-                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.grey[700],
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 10,
+                                                        vertical: 5),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.primary.withOpacity(0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  border: Border.all(
+                                                    color: AppColors.primary,
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  '${(result.topDiseaseConfidence * 100).toStringAsFixed(1)}%',
+                                                  style: theme
+                                                      .textTheme.bodySmall
+                                                      ?.copyWith(
+                                                    color: AppColors.primary,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                                 ),
                                               ),
                                             ],
@@ -617,18 +652,50 @@ class _ScanResultsScreenState extends State<ScanResultsScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         ...predictions.take(3).map((p) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 4.0),
+          final index = predictions.indexOf(p);
+          return Container(
+            margin: const EdgeInsets.only(bottom: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: index == 0
+                  ? AppColors.primary.withOpacity(0.08)
+                  : Colors.grey.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: index == 0
+                    ? AppColors.primary.withOpacity(0.3)
+                    : Colors.grey.withOpacity(0.2),
+                width: 1,
+              ),
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(p['label'], style: theme.textTheme.bodyMedium),
-                Text(
-                  '${(p['confidence'] * 100).toStringAsFixed(1)}%',
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                Expanded(
+                  child: Text(
+                    p['label'],
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight:
+                          index == 0 ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
                     color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${(p['confidence'] * 100).toStringAsFixed(1)}%',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],

@@ -1,140 +1,112 @@
+// Based on diseaseLabelsV3.txt - 20 skin conditions with medical descriptions
+// Disease names must match exactly what SeverityHelper.parseDiseaseLabel() returns
 final Map<String, List<Map<String, String>>> skinConditionsByCategory = {
   "Infections": [
     {
-      "id": "1",
-      "name": "Candidiasis",
-      "description":
-          "A fungal infection caused by Candida species, leading to red, itchy rashes often found in moist areas of the body.",
-    },
-    {
-      "id": "2",
-      "name": "Infestations and Bites",
-      "description":
-          "Skin reactions caused by insects, parasites, or mites, leading to itching, redness, and irritation.",
-    },
-    {
-      "id": "3",
+      "id": "16",
       "name": "Tinea",
       "description":
-          "A contagious fungal infection (ringworm) causing itchy, red, circular patches on the skin, scalp, or nails.",
+          "A contagious fungal infection (ringworm) that affects the skin, scalp, or nails. Presents as itchy, red, circular patches with raised borders and clearer centers. Common in warm, moist areas of the body.",
     },
     {
-      "id": "4",
+      "id": "19",
       "name": "Warts",
       "description":
-          "Small, rough, benign skin growths caused by human papillomavirus (HPV).",
+          "Small, rough, benign skin growths caused by human papillomavirus (HPV). They appear as raised bumps with a rough texture and can occur anywhere on the body, most commonly on hands and feet.",
     },
   ],
   "Inflammations": [
     {
-      "id": "5",
+      "id": "1",
       "name": "Acne",
       "description":
-          "A common skin condition where hair follicles become clogged with oil and dead skin cells, causing pimples and inflammation.",
+          "A common inflammatory skin condition where hair follicles become clogged with oil and dead skin cells. Causes pimples, blackheads, whiteheads, and sometimes deeper cysts. Severity ranges from mild (occasional breakouts) to moderate (persistent lesions) to severe (widespread cystic acne with potential scarring).",
     },
     {
-      "id": "6",
-      "name": "Psoriasis",
-      "description":
-          "A chronic autoimmune condition that speeds up skin cell growth, causing thick, scaly patches that can be itchy or painful.",
-    },
-    {
-      "id": "7",
-      "name": "Bullous Disorders",
-      "description":
-          "A group of skin diseases causing large, fluid-filled blisters due to immune reactions or genetic defects.",
-    },
-    {
-      "id": "8",
+      "id": "5",
       "name": "Eczema",
       "description":
-          "A chronic inflammatory skin condition that causes itchy, red, dry, and cracked patches of skin.",
+          "A chronic inflammatory skin condition (atopic dermatitis) that causes intensely itchy, red, dry, and cracked patches of skin. Can range from moderate (localized patches with redness and scaling) to severe (widespread inflammation, weeping lesions, and significant discomfort). Often worsens with triggers like allergens or stress.",
     },
-    {
-      "id": "9",
-      "name": "Lichen",
-      "description":
-          "A group of skin disorders (like lichen planus) that cause flat-topped, itchy, purplish lesions.",
-    },
-    {
-      "id": "10",
-      "name": "Rosacea",
-      "description":
-          "A chronic skin condition causing redness, visible blood vessels, and sometimes pimples, typically on the face.",
-    },
-  ],
-  "Vascular": [
     {
       "id": "11",
-      "name": "Vasculitis",
+      "name": "Psoriasis",
       "description":
-          "Inflammation of blood vessels that can cause red or purple spots, ulcers, and tissue damage.",
+          "A chronic autoimmune condition that speeds up skin cell growth, causing thick, red, scaly patches (plaques) that can be itchy, painful, or burn. Most commonly appears on elbows, knees, scalp, and lower back. Severity varies from moderate localized plaques to widespread involvement.",
     },
     {
       "id": "12",
-      "name": "Vascular Tumors",
+      "name": "Rosacea",
       "description":
-          "Abnormal growths of blood vessels, usually benign, such as hemangiomas or pyogenic granulomas.",
+          "A chronic inflammatory skin condition that primarily affects the face, causing persistent redness, visible blood vessels, and sometimes acne-like pimples. May range from mild (occasional flushing and slight redness) to moderate (persistent facial redness with visible vessels and bumps). Common triggers include sun, stress, and certain foods.",
     },
     {
-      "id": "13",
-      "name": "Sunlight Damage",
+      "id": "8",
+      "name": "Lupus",
       "description":
-          "Skin damage from prolonged sun exposure, leading to vascular and inflammatory changes, wrinkles, and dark spots.",
+          "A severe autoimmune disease that can affect the skin and other organs. Cutaneous lupus causes characteristic butterfly-shaped rashes on the face, discoid lesions (round, scaly patches), or photosensitive rashes. Represents a serious condition requiring medical management.",
     },
   ],
-  "Genetic / Congenital": [
+  "Normal": [
     {
-      "id": "14",
+      "id": "10",
+      "name": "Normal",
+      "description":
+          "Healthy skin without visible disease, lesions, or abnormal growths. Shows normal color, texture, and appearance. No treatment required.",
+    },
+  ],
+  "Benign Growths": [
+    {
+      "id": "18",
       "name": "Vitiligo",
       "description":
-          "An autoimmune disorder that causes loss of pigment, leading to white patches on the skin.",
+          "An autoimmune condition that causes loss of skin pigment, resulting in white or light-colored patches on the skin. Occurs when melanocytes (pigment-producing cells) are destroyed. Generally harmless but can affect appearance and may have psychological impact. Usually mild in severity.",
     },
     {
-      "id": "15",
-      "name": "Moles",
+      "id": "9",
+      "name": "Mole",
       "description":
-          "Small clusters of pigmented cells, usually benign, but may change in size, color, or shape over time.",
+          "Harmless clusters of pigmented cells (melanocytes) that appear as small brown or black spots on the skin. Most moles are benign and stable, though they should be monitored for changes in size, shape, color, or texture that might indicate melanoma.",
     },
     {
-      "id": "16",
+      "id": "4",
       "name": "Benign Tumors",
       "description":
-          "Non-cancerous skin growths that do not invade nearby tissues or spread to other parts of the body.",
+          "Non-cancerous skin growths that do not invade nearby tissues or spread to other parts of the body. These are generally harmless but may be removed for cosmetic reasons or if they cause discomfort. Moderate in clinical significance.",
     },
     {
-      "id": "17",
-      "name": "Seborrheic Keratoses",
+      "id": "14",
+      "name": "Seborrh Keratoses",
       "description":
-          "Common, harmless skin growths that appear waxy, raised, and brown or black, typically with age.",
+          "Common, harmless skin growths that appear waxy, raised, and brown, black, or tan in color. Often described as having a 'stuck-on' appearance. Typically develop with age and are completely benign. Mild in severity with no cancer risk.",
     },
   ],
   "Cancers": [
     {
-      "id": "18",
+      "id": "8",
       "name": "Melanoma",
       "description":
-          "A serious type of skin cancer that develops from melanocytes, often appearing as irregular or changing moles.",
+          "A severe and potentially life-threatening type of skin cancer that develops from melanocytes (pigment-producing cells). Often appears as an irregular or changing mole with asymmetry, irregular borders, multiple colors, or diameter greater than 6mm. Early detection and treatment are critical as it can spread to other organs.",
     },
     {
-      "id": "19",
-      "name": "Actinic Keratosis",
+      "id": "3",
+      "name": "Basal Cell Carcinoma",
       "description":
-          "A rough, scaly patch on sun-exposed skin. Considered a pre-cancerous lesion that can progress to squamous cell carcinoma.",
+          "The most common type of skin cancer, arising from basal cells in the lower epidermis. Typically appears as a pearly or waxy bump, flat flesh-colored or brown scar-like lesion. Moderate in severity as it rarely spreads but can cause local tissue damage if untreated. Usually develops on sun-exposed areas.",
     },
     {
-      "id": "20",
-      "name": "Skin Cancer",
+      "id": "15",
+      "name": "Squamous Cell Carcinoma",
       "description":
-          "A broad term for malignant tumors of the skin, including basal cell carcinoma, squamous cell carcinoma, and melanoma.",
+          "A severe form of skin cancer that develops from squamous cells in the upper layers of the skin. Appears as firm red nodules, flat lesions with scaly or crusty surfaces, or sores that don't heal. Can spread to other parts of the body if untreated. Common on sun-exposed areas like face, ears, and hands.",
     },
   ],
-  "Unclassified / Control Group": [
+  "Unclassified": [
     {
-      "id": "21",
-      "name": "Unknown / Normal",
+      "id": "17",
+      "name": "Unknown",
       "description":
-          "Healthy skin without visible disease, lesions, or abnormal growths. Serves as control or reference class.",
+          "Skin presentation that cannot be definitively classified into a specific condition category. May require professional dermatological evaluation for accurate diagnosis and appropriate treatment planning.",
     },
   ],
 };
