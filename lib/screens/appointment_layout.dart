@@ -35,6 +35,127 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
     'Patient Details'
   ];
 
+  final List<String> _stepDescriptions = [
+    'Review doctor\'s credentials and experience',
+    'Select your preferred appointment time',
+    'Provide your contact and medical information'
+  ];
+
+  String _getActionButtonText() {
+    switch (_currentStep) {
+      case 0:
+        return 'Book Appointment';
+      case 1:
+        return 'Confirm Date';
+      case 2:
+        return 'Complete Booking';
+      default:
+        return 'Next';
+    }
+  }
+
+  Future<void> _showBookingConfirmation() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        final theme = Theme.of(context);
+        return AlertDialog(
+          title: Text(
+            'Confirm Booking',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Please confirm your appointment details:',
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 16),
+              _confirmationRow(Icons.person, 'Doctor', 'Dr. ${widget.doctor.displayName}'),
+              const SizedBox(height: 8),
+              _confirmationRow(
+                Icons.calendar_today,
+                'Date',
+                _selectedDay != null
+                    ? '${_selectedDay!.day}/${_selectedDay!.month}/${_selectedDay!.year}'
+                    : 'N/A',
+              ),
+              const SizedBox(height: 8),
+              _confirmationRow(Icons.access_time, 'Time', _selectedTime ?? 'N/A'),
+              const SizedBox(height: 8),
+              _confirmationRow(
+                Icons.attach_money,
+                'Consultation Fee',
+                'P${widget.doctor.consultFee.toStringAsFixed(0)}',
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      setState(() {
+        _isBooking = true;
+      });
+      try {
+        await _patientDetailsScreenKey.currentState?.saveAndProceed();
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isBooking = false;
+          });
+        }
+      }
+    }
+  }
+
+  Widget _confirmationRow(IconData icon, String label, String value) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: AppColors.primary),
+        const SizedBox(width: 8),
+        Expanded(
+          child: RichText(
+            text: TextSpan(
+              style: theme.textTheme.bodyMedium,
+              children: [
+                TextSpan(
+                  text: '$label: ',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                TextSpan(text: value),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   void _nextPage() {
     if (_currentStep < 2) {
       setState(() {
@@ -78,18 +199,7 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
         }
         break;
       case 2:
-        setState(() {
-          _isBooking = true;
-        });
-        try {
-          await _patientDetailsScreenKey.currentState?.saveAndProceed();
-        } finally {
-          if (mounted) {
-            setState(() {
-              _isBooking = false;
-            });
-          }
-        }
+        await _showBookingConfirmation();
         break;
     }
   }
@@ -126,9 +236,17 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
                   )
                 : GestureDetector(
                     onTap: _handleAppBarAction,
-                    child: const Tooltip(
-                      message: 'Confirm',
-                      child: Icon(Icons.check),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Center(
+                        child: Text(
+                          _getActionButtonText(),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
           ],
@@ -138,6 +256,49 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
             StepProgressBar(
               currentStep: _currentStep,
               totalSteps: 3,
+            ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.cherryBlossom.withOpacity(0.1),
+                border: Border(
+                  bottom: BorderSide(
+                    color: Colors.grey.withOpacity(0.2),
+                    width: 1,
+                  ),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _stepDescriptions[_currentStep],
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey[700],
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        size: 16,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Consultation Fee: P${widget.doctor.consultFee.toStringAsFixed(0)}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
             Expanded(
               child: PageView(
