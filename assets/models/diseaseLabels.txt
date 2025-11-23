@@ -1,0 +1,17 @@
+0: Acne
+1: Actinic Keratosis
+2: Benign Tumors
+3: Eczema
+4: Lupus
+5: Melanoma
+6: Moles
+7: Psoriasis
+8: Rosacea
+9: Seborrheic Keratoses
+10: Skin Cancer
+11: Sunlight Damage
+12: Tinea
+13: Normal Skin
+14: Vascular Tumors
+15: Vitiligo
+16: Warts

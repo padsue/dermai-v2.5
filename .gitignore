@@ -1,0 +1,90 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+
+# Flutter/Dart/Pub related
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+ios/Pods/
+ios/Flutter/App.framework
+ios/Flutter/engine.mock.stamp
+ios/Flutter/flutter_assets/
+ios/Flutter/.last_build_id
+ios/.symlinks/
+ios/Runner/GeneratedPluginRegistrant.*
+
+# Android related
+android/app/src/main/assets/flutter_assets/
+android/app/build/
+android/.gradle/
+android/local.properties
+android/key.properties
+*.jks
+*.keystore
+
+# Windows related
+windows/flutter/ephemeral/
+windows/flutter/ephemeral.stamp
+windows/flutter/generated_plugin_registrant.h
+windows/flutter/generated_plugins.cmake
+windows/flutter/generated_config.cmake
+windows/runner/Debug/
+windows/runner/Release/
+windows/runner/Profile/
+windows/runner/flutter_window.pdb
+windows/runner/runner.exe.pdb
+windows/runner/runner.exe.ilk
+windows/runner/runner.exe.manifest
+windows/x64/
+windows/x86/
+windows/*.user
+windows/*.suo
+windows/.vs/
+
+# Linux related
+linux/flutter/ephemeral/
+linux/flutter/ephemeral.stamp
+linux/flutter/generated_plugin_registrant.h
+linux/flutter/generated_plugins.cmake
+linux/flutter/generated_config.cmake
+linux/CMakeLists.txt.user
+linux/nbproject/
+linux/build/
+
+# macOS related
+macos/Flutter/ephemeral/
+macos/Flutter/ephemeral.stamp
+macos/Flutter/GeneratedPluginRegistrant.swift
+macos/Flutter/generated_plugins.cmake
+macos/Flutter/generated_config.cmake
+macos/Pods/
+macos/.symlinks/
+macos/build/
+macos/DerivedData/
+macos/xcuserdata/
+
+# Web related
+web/build/
+web/.dart_tool/
+
+# IDE specific
+.idea/
+*.iml
+*.ipr
+*.iws
+nbproject/
+.vscode/
+
+scripts/
