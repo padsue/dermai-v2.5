@@ -44,9 +44,18 @@ class AuthService {
     }
   }
 
-  Future<UserCredential?> signUpWithEmailAndPassword(String email,
-      String password, String firstName, String lastName, String username,
-      {String? phoneNumber}) async {
+  Future<UserCredential?> signUpWithEmailAndPassword(
+      String email,
+      String password,
+      String firstName,
+      String lastName,
+      String username, {
+    String? phoneNumber,
+    String? region,
+    String? province,
+    String? municipality,
+    String? barangay,
+  }) async {
     try {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
@@ -62,6 +71,10 @@ class AuthService {
           'username': username,
           'email': email,
           'phoneNumber': phoneNumber,
+          'region': region,
+          'province': province,
+          'municipality': municipality,
+          'barangay': barangay,
           'photoUrl': '',
           'createdAt': FieldValue.serverTimestamp(),
           'updatedAt': FieldValue.serverTimestamp(),

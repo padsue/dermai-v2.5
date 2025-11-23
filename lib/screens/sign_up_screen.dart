@@ -9,6 +9,7 @@ import 'package:audioplayers/audioplayers.dart';
 import '../services/notification_service.dart';
 import '../widgets/custom_app_bar.dart';
 import '../utils/error_mapper.dart';
+import '../utils/location_helper.dart';
 
 
 class SignUpScreen extends StatefulWidget {
@@ -33,6 +34,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String? _emailError;
   String? _termsError;
 
+  // Location dropdowns
+  String? _selectedRegion;
+  String? _selectedProvince;
+  String? _selectedMunicipality;
+  String? _selectedBarangay;
+
+  List<String> _regions = [];
+  List<String> _provinces = [];
+  List<String> _municipalities = [];
+  List<String> _barangays = [];
+
   @override
   void initState() {
     super.initState();
@@ -42,6 +54,58 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _emailController.addListener(_clearErrors);
     _passwordController.addListener(_clearErrors);
     _confirmPasswordController.addListener(_clearErrors);
+    _loadLocations();
+  }
+
+  Future<void> _loadLocations() async {
+    await LocationHelper.loadLocations();
+    if (mounted) {
+      setState(() {
+        _regions = LocationHelper.getRegions();
+      });
+    }
+  }
+
+  void _onRegionChanged(String? value) {
+    setState(() {
+      _selectedRegion = value;
+      _selectedProvince = null;
+      _selectedMunicipality = null;
+      _selectedBarangay = null;
+      _provinces = value != null ? LocationHelper.getProvinces(value) : [];
+      _municipalities = [];
+      _barangays = [];
+    });
+  }
+
+  void _onProvinceChanged(String? value) {
+    setState(() {
+      _selectedProvince = value;
+      _selectedMunicipality = null;
+      _selectedBarangay = null;
+      _municipalities = value != null && _selectedRegion != null
+          ? LocationHelper.getMunicipalities(_selectedRegion!, value)
+          : [];
+      _barangays = [];
+    });
+  }
+
+  void _onMunicipalityChanged(String? value) {
+    setState(() {
+      _selectedMunicipality = value;
+      _selectedBarangay = null;
+      _barangays =
+          value != null && _selectedRegion != null && _selectedProvince != null
+              ? LocationHelper.getBarangays(
+                  _selectedRegion!, _selectedProvince!, value)
+              : [];
+    });
+  }
+
+  void _onBarangayChanged(String? value) {
+    setState(() {
+      _selectedBarangay = value;
+    });
   }
 
   @override
@@ -85,6 +149,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           _firstNameController.text.trim(),
           _lastNameController.text.trim(),
           _usernameController.text.trim(),
+          region: _selectedRegion,
+          province: _selectedProvince,
+          municipality: _selectedMunicipality,
+          barangay: _selectedBarangay,
         );
 
         if (mounted) {
@@ -334,6 +402,103 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     }
                     return null;
                   },
+                ),
+                const SizedBox(height: 20),
+                // Address Fields
+                Text(
+                  "Address",
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                DropdownButtonFormField<String>(
+                  value: _selectedRegion,
+                  decoration: const InputDecoration(
+                    labelText: 'Region',
+                    border: OutlineInputBorder(),
+                  ),
+                  isExpanded: true,
+                  items: _regions.map((region) {
+                    return DropdownMenuItem(
+                      value: region,
+                      child: Text(
+                        region,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: _onRegionChanged,
+                  validator: (value) =>
+                      value == null ? 'Please select a region' : null,
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: _selectedProvince,
+                  decoration: const InputDecoration(
+                    labelText: 'Province',
+                    border: OutlineInputBorder(),
+                  ),
+                  isExpanded: true,
+                  items: _provinces.map((province) {
+                    return DropdownMenuItem(
+                      value: province,
+                      child: Text(
+                        province,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: _provinces.isEmpty ? null : _onProvinceChanged,
+                  validator: (value) =>
+                      value == null ? 'Please select a province' : null,
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: _selectedMunicipality,
+                  decoration: const InputDecoration(
+                    labelText: 'Municipality/City',
+                    border: OutlineInputBorder(),
+                  ),
+                  isExpanded: true,
+                  items: _municipalities.map((municipality) {
+                    return DropdownMenuItem(
+                      value: municipality,
+                      child: Text(
+                        municipality,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    );
+                  }).toList(),
+                  onChanged:
+                      _municipalities.isEmpty ? null : _onMunicipalityChanged,
+                  validator: (value) =>
+                      value == null ? 'Please select a municipality' : null,
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: _selectedBarangay,
+                  decoration: const InputDecoration(
+                    labelText: 'Barangay',
+                    border: OutlineInputBorder(),
+                  ),
+                  isExpanded: true,
+                  items: _barangays.map((barangay) {
+                    return DropdownMenuItem(
+                      value: barangay,
+                      child: Text(
+                        barangay,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: _barangays.isEmpty ? null : _onBarangayChanged,
+                  validator: (value) =>
+                      value == null ? 'Please select a barangay' : null,
                 ),
                 const SizedBox(height: 20),
                 Center(
