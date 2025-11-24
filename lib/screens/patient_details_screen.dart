@@ -523,7 +523,7 @@ class PatientDetailsScreenState extends State<PatientDetailsScreen> {
             ),
             const SizedBox(height: 16),
             _buildFormField(
-              label: 'Additional notes',
+              label: 'Additional notes (Symptoms)',
               controller: _notesController,
               maxLines: 3,
             ),

@@ -7,6 +7,7 @@ import '../utils/app_colors.dart';
 import '../widgets/brand_name.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
+import '../services/cache_service.dart';
 import '../repositories/user_repository.dart';
 import '../models/user_model.dart';
 import '../utils/user_utils.dart';
@@ -37,19 +38,31 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     final authService = context.read<AuthService>();
+    final cacheService = context.read<CacheService>();
     final userRepository = context.read<UserRepository>();
     final recordRepository = context.read<RecordRepository>();
     final bookingRepository = context.read<BookingRepository>();
     final doctorRepository = context.read<DoctorRepository>();
-    final currentUser = authService.currentUser;
-
+    
+    // Try to get current user from Firebase Auth first
+    var currentUser = authService.currentUser;
+    String? userId;
+    
     if (currentUser != null) {
-      _userStream = userRepository.getUserStream(currentUser.uid);
-      _recordsStream =
-          recordRepository.getRecordsStreamForUser(currentUser.uid);
-      _bookingsStream =
-          bookingRepository.getUpcomingBookingsStream(currentUser.uid);
+      userId = currentUser.uid;
+    } else {
+      // Fallback to cached user if offline or auth not yet resolved
+      final cachedUser = cacheService.getFirstCachedUser();
+      userId = cachedUser?.uid;
     }
+    
+    // Initialize streams if we have a user ID (either from auth or cache)
+    if (userId != null) {
+      _userStream = userRepository.getUserStream(userId);
+      _recordsStream = recordRepository.getRecordsStreamForUser(userId);
+      _bookingsStream = bookingRepository.getUpcomingBookingsStream(userId);
+    }
+    
     // Fetch all doctors once to use for matching with bookings
     _doctorsStream = doctorRepository.getDoctorsStream();
   }
@@ -565,6 +578,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 actionLabel: null,
               );
             }
+            
             if (!bookingsSnapshot.hasData || bookingsSnapshot.data!.isEmpty) {
               return _EmptyState(
                 icon: Icons.event_available,
@@ -694,7 +708,12 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
               _buildDetailRow(Icons.videocam, 'Type', booking.type ?? 'Online Consultation'),
               const SizedBox(height: 10),
-              _buildDetailRow(Icons.info_outline, 'Status', booking.status),
+              _buildDetailRow(
+                Icons.info_outline, 
+                'Status', 
+                booking.status,
+                valueColor: _getStatusColor(booking.status),
+              ),
               
               if (booking.condition != null && booking.condition!.isNotEmpty) ...[
                 const SizedBox(height: 10),
@@ -730,7 +749,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value) {
+  Widget _buildDetailRow(IconData icon, String label, String value, {Color? valueColor}) {
     return Row(
       children: [
         Icon(icon, size: 20, color: AppColors.primary),
@@ -748,10 +767,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Text(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: valueColor ?? AppColors.textPrimary,
                 ),
               ),
             ],
@@ -1095,6 +1114,31 @@ class _ConsultationCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: _getStatusColor(booking.status),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          booking.status,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: _getStatusColor(booking.status),
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -1185,5 +1229,26 @@ class _EmptyState extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+Color _getStatusColor(String status) {
+  switch (status.toLowerCase()) {
+    case 'confirmed':
+      return Colors.green;
+    case 'pending':
+      return Colors.amber;
+    case 'rescheduled':
+      return Colors.blue;
+    case 'cancelled':
+      return Colors.red;
+    case 'done':
+      return Colors.green[800]!;
+    case 'archived':
+      return Colors.grey;
+    case 'reopened':
+      return Colors.orange;
+    default:
+      return AppColors.primary;
   }
 }

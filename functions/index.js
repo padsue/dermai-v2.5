@@ -1,4 +1,5 @@
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
 
@@ -249,3 +250,59 @@ exports.resetPasswordWithOtp = onCall(async (request) => {
     throw new HttpsError("internal", "Failed to reset password.");
   }
 });
+
+// Firestore Trigger: Notify patient when booking is cancelled
+exports.onBookingCancelled = onDocumentUpdated(
+  "bookings/{bookingId}",
+  async (event) => {
+    const beforeData = event.data.before.data();
+    const afterData = event.data.after.data();
+    const bookingId = event.params.bookingId;
+
+    // Check if status changed to 'cancelled' (case-insensitive)
+    const beforeStatus = beforeData.status ? beforeData.status.toLowerCase() : '';
+    const afterStatus = afterData.status ? afterData.status.toLowerCase() : '';
+
+    if (beforeStatus !== 'cancelled' && afterStatus === 'cancelled') {
+      try {
+        const userId = afterData.userId;
+        const doctorId = afterData.doctorId;
+        const appointmentDate = afterData.appointmentDate.toDate();
+
+        // Get doctor info for notification
+        const doctorDoc = await db.collection('doctors').doc(doctorId).get();
+        let doctorName = 'Your doctor';
+
+        if (doctorDoc.exists) {
+          const doctorData = doctorDoc.data();
+          doctorName = `Dr. ${doctorData.firstName || ''} ${doctorData.lastName || ''}`.trim();
+          if (doctorName === 'Dr.') {
+            doctorName = 'Your doctor';
+          }
+        }
+
+        // Format appointment date
+        const dateOptions = { month: 'long', day: 'numeric', year: 'numeric' };
+        const formattedDate = appointmentDate.toLocaleDateString('en-US', dateOptions);
+        const appointmentTime = afterData.appointmentTime || '';
+
+        // Create notification
+        await db.collection('notifications').add({
+          userId: userId,
+          title: 'Appointment Cancelled',
+          message: `${doctorName} has cancelled your appointment scheduled for ${formattedDate}${appointmentTime ? ' at ' + appointmentTime : ''}.`,
+          type: 'booking_cancelled',
+          relatedId: bookingId,
+          read: false,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
+        console.log(`Notification created for user ${userId} - booking ${bookingId} cancelled`);
+      } catch (error) {
+        console.error('Error creating cancellation notification:', error);
+        // Don't throw - we don't want to fail the booking update
+      }
+    }
+  }
+);
+
