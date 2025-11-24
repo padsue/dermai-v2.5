@@ -8,6 +8,7 @@ import '../utils/keyboard_utils.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../services/notification_service.dart';
 import '../widgets/custom_app_bar.dart';
+import '../widgets/date_picker_field.dart';
 import '../utils/error_mapper.dart';
 import '../utils/location_helper.dart';
 
@@ -39,6 +40,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String? _selectedProvince;
   String? _selectedMunicipality;
   String? _selectedBarangay;
+  DateTime? _selectedDateOfBirth;
 
   List<String> _regions = [];
   List<String> _provinces = [];
@@ -153,6 +155,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           province: _selectedProvince,
           municipality: _selectedMunicipality,
           barangay: _selectedBarangay,
+          dateOfBirth: _selectedDateOfBirth,
         );
 
         if (mounted) {
@@ -402,6 +405,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     }
                     return null;
                   },
+                ),
+                const SizedBox(height: 16),
+                DatePickerField(
+                  label: 'Date of Birth',
+                  selectedDate: _selectedDateOfBirth,
+                  onDateSelected: (date) =>
+                      setState(() => _selectedDateOfBirth = date),
+                  hintText: 'Select Date of Birth',
+                  validator: (value) =>
+                      value == null ? 'Please select your date of birth' : null,
                 ),
                 const SizedBox(height: 20),
                 // Address Fields

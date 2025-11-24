@@ -55,6 +55,7 @@ class AuthService {
     String? province,
     String? municipality,
     String? barangay,
+    DateTime? dateOfBirth,
   }) async {
     try {
       UserCredential userCredential =
@@ -75,6 +76,7 @@ class AuthService {
           'province': province,
           'municipality': municipality,
           'barangay': barangay,
+          'dateOfBirth': dateOfBirth,
           'photoUrl': '',
           'createdAt': FieldValue.serverTimestamp(),
           'updatedAt': FieldValue.serverTimestamp(),

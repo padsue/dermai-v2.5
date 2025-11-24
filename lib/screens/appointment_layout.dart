@@ -301,28 +301,59 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
               ),
             ),
             Expanded(
-              child: PageView(
-                controller: _pageController,
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  DoctorsProfileScreen(
-                    doctor: widget.doctor,
-                  ),
-                  AppointmentScreen(
-                    key: _appointmentScreenKey,
-                    doctor: widget.doctor,
-                  ),
-                  if (_selectedDay != null && _selectedTime != null)
-                    PatientDetailsScreen(
-                      key: _patientDetailsScreenKey,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 80.0),
+                child: PageView(
+                  controller: _pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    DoctorsProfileScreen(
                       doctor: widget.doctor,
-                      selectedDay: _selectedDay!,
-                      selectedTime: _selectedTime!,
                     ),
-                ],
+                    AppointmentScreen(
+                      key: _appointmentScreenKey,
+                      doctor: widget.doctor,
+                    ),
+                    if (_selectedDay != null && _selectedTime != null)
+                      PatientDetailsScreen(
+                        key: _patientDetailsScreenKey,
+                        doctor: widget.doctor,
+                        selectedDay: _selectedDay!,
+                        selectedTime: _selectedTime!,
+                      ),
+                  ],
+                ),
               ),
             ),
           ],
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: _isBooking ? null : _handleAppBarAction,
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          highlightElevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          icon: _isBooking
+              ? Container(
+                  width: 24,
+                  height: 24,
+                  padding: const EdgeInsets.all(2.0),
+                  child: const CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 3,
+                  ),
+                )
+              : const Icon(Icons.arrow_forward),
+          label: Text(
+            _isBooking ? 'Booking...' : _getActionButtonText(),
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
     );

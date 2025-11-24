@@ -36,41 +36,52 @@ class _MainScreenState extends State<MainScreen> {
     final currentUser = authService.currentUser;
     final appProvider = context.watch<AppProvider>();
 
-    return Scaffold(
-      appBar: CustomAppBar(
-        title: const BrandName(
-          size: BrandNameSize.large,
-          useSecondaryColor: true,
-          alignment: MainAxisAlignment.start,
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {},
-            padding: EdgeInsets.zero,
+    return WillPopScope(
+      onWillPop: () async {
+        // If not on home tab, navigate to home tab
+        if (appProvider.currentIndex != 0) {
+          appProvider.changeTab(0);
+          return false; // Prevent the route from being popped
+        }
+        // If already on home tab, allow app to exit
+        return true;
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          title: const BrandName(
+            size: BrandNameSize.large,
+            useSecondaryColor: true,
+            alignment: MainAxisAlignment.start,
           ),
-          GestureDetector(
-            onTap: () {
-              // Navigate to the MoreScreen which has profile options
-              context.read<AppProvider>().changeTab(5);
-            },
-            child: const ProfileAvatar(
-              radius: 16,
-              showBorder: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {},
+              padding: EdgeInsets.zero,
             ),
+            GestureDetector(
+              onTap: () {
+                // Navigate to the MoreScreen which has profile options
+                context.read<AppProvider>().changeTab(5);
+              },
+              child: const ProfileAvatar(
+                radius: 16,
+                showBorder: true,
+              ),
+            ),
+          ],
+          showBackButton: false,
+        ),
+        body: IndexedStack(
+          index: appProvider.currentIndex,
+          children: _screens,
+        ),
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: CustomBottomNavBar(
+            currentIndex: appProvider.currentIndex,
+            onTap: (index) => context.read<AppProvider>().changeTab(index),
           ),
-        ],
-        showBackButton: false,
-      ),
-      body: IndexedStack(
-        index: appProvider.currentIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: CustomBottomNavBar(
-          currentIndex: appProvider.currentIndex,
-          onTap: (index) => context.read<AppProvider>().changeTab(index),
         ),
       ),
     );

@@ -65,11 +65,33 @@ class _HomeScreenState extends State<HomeScreen> {
     return 'Good Evening';
   }
 
+  // Helper to build section headers
+  Widget _buildSectionHeader({
+    required IconData icon,
+    required String title,
+    required ThemeData theme,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, color: AppColors.primary, size: 20),
+        const SizedBox(width: 8),
+        Text(
+          title,
+            style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: AppColors.smokeWhite,
       body: StreamBuilder<UserModel?>(
         stream: _userStream,
         builder: (context, snapshot) {
@@ -85,132 +107,143 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Hero Banner
                 Container(
                   height: 120,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    image: const DecorationImage(
-                      image: AssetImage("assets/images/abstractbg.jpg"),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Access Online Consultations\nfrom Licensed Dermatologists",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      const Spacer(),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            context.read<AppProvider>().changeTab(1);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: AppColors.primary,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 8),
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            textStyle: theme.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          child: const Text("Schedule Appointment"),
-                        ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "${_getGreeting()}, ${userModel?.displayName ?? 'User'}!",
-                        style: theme.textTheme.displaySmall?.copyWith(
-                          color: theme.colorScheme.primary,
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          "assets/images/abstractbg.jpg",
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(color: AppColors.champagne),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text("Subscription", style: theme.textTheme.titleMedium),
-                const SizedBox(height: 8),
-                Container(
-                  height: 120,
-                  decoration: BoxDecoration(
-                    gradient: AppColors.backgroundGradient,
-                    borderRadius: BorderRadius.circular(12),
-                    image: const DecorationImage(
-                      image: AssetImage("assets/images/subscription_card.jpg"),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const BrandName(
-                                size: BrandNameSize.headlineMedium,
-                                useSecondaryColor: true,
-                                alignment: MainAxisAlignment.start,
-                              ),
-                              const Spacer(),
-                              Text(
-                                userModel?.email ?? "no-email@dermai.com",
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                ),
-                              ),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                              Colors.black.withOpacity(0.5),
+                              Colors.transparent,
                             ],
                           ),
                         ),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Text(
-                          "Freemium",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Access Online Consultations\nfrom Licensed Dermatologists",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                height: 1.3,
+                              ),
+                            ),
+                            const Spacer(),
+                            ElevatedButton(
+                              onPressed: () {
+                                context.read<AppProvider>().changeTab(1);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: AppColors.primary,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 8),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                textStyle: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              child: const Text("Schedule Appointment"),
+                            ),
+                          ],
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
-                Text("Summary", style: theme.textTheme.titleMedium),
-                const SizedBox(height: 8),
+
+                // Greeting
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _getGreeting(),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          Text(
+                            userModel?.displayName ?? 'User',
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // Summary Section
+                _buildSectionHeader(
+                  icon: Icons.pie_chart_rounded,
+                  title: "Health Summary",
+                  theme: theme,
+                ),
+                const SizedBox(height: 12),
                 _buildSummarySection(),
-                const SizedBox(height: 20),
-                Text("Consultations", style: theme.textTheme.titleMedium),
-                const SizedBox(height: 8),
+                const SizedBox(height: 24),
+
+                // Consultations Section
+                _buildSectionHeader(
+                  icon: Icons.people_alt_rounded,
+                  title: "Upcoming Consultations",
+                  theme: theme,
+                ),
+                const SizedBox(height: 12),
                 _buildConsultationsSection(),
-                const SizedBox(height: 20),
-                Text("History", style: theme.textTheme.titleMedium),
-                const SizedBox(height: 8),
+                const SizedBox(height: 24),
+
+                // History Section
+                _buildSectionHeader(
+                  icon: Icons.history_rounded,
+                  title: "Recent Scans",
+                  theme: theme,
+                ),
+                const SizedBox(height: 12),
                 _buildHistorySection(),
+                const SizedBox(height: 16),
               ],
             ),
           );
@@ -230,58 +263,58 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // Banner skeleton
             Container(
-              height: 120,
+              height: 140,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             // Greeting skeleton
             Container(
-              width: 200,
-              height: 32,
+              width: double.infinity,
+              height: 80,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 24),
             // Section title
             Container(
-              width: 120,
-              height: 20,
+              width: 150,
+              height: 40,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             // Subscription card skeleton
             Container(
-              height: 120,
+              height: 130,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             // Summary title
             Container(
-              width: 100,
-              height: 20,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-            const SizedBox(height: 8),
-            // Summary skeleton
-            Container(
-              height: 132,
+              width: 150,
+              height: 40,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Summary skeleton
+            Container(
+              height: 150,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
           ],
@@ -307,11 +340,11 @@ class _HomeScreenState extends State<HomeScreen> {
             baseColor: Colors.grey[300]!,
             highlightColor: Colors.grey[100]!,
             child: Container(
-              height: 132,
+              height: 150,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
           );
@@ -319,10 +352,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return _EmptyState(
+            icon: Icons.pie_chart_outline,
+            iconColor: AppColors.primary,
             title: 'No summary yet',
             subtitle: 'Start scanning skin lesions to see a health summary.',
-            asset: 'assets/images/empty_summary.png',
-            onAction: () => context.read<AppProvider>().changeTab(1),
+            onAction: () => context.read<AppProvider>().changeTab(2),
             actionLabel: 'Start Scan',
           );
         }
@@ -348,24 +382,39 @@ class _HomeScreenState extends State<HomeScreen> {
         final topConditions = sortedConditions.take(3).toList();
 
         if (topConditions.isEmpty) {
-          return Container(
-            height: 132,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.champagne,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Center(
-                child: Text('No conditions detected yet.',
-                    style: theme.textTheme.bodyMedium)),
+          return _EmptyState(
+            icon: Icons.pie_chart_outline,
+            iconColor: AppColors.primary,
+            title: 'No conditions detected',
+            subtitle: 'Your health summary will appear here.',
+            onAction: () => context.read<AppProvider>().changeTab(2),
+            actionLabel: 'Start Scan',
           );
         }
 
         return Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: AppColors.champagne,
-            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              colors: [
+                Colors.white,
+                AppColors.champagne.withOpacity(0.7),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: AppColors.primary.withOpacity(0.2),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Column(
             children: [
@@ -373,21 +422,35 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Expanded(
                     flex: 1,
-                    child: SizedBox(
-                      height: 100,
-                      child: PieChart(
-                        PieChartData(
-                          sectionsSpace: 2,
-                          centerSpaceRadius: 20,
-                          sections: List.generate(topConditions.length, (i) {
-                            final condition = topConditions[i];
-                            return PieChartSectionData(
-                              color: summaryColors[i % summaryColors.length],
-                              value: condition.value.toDouble(),
-                              showTitle: false,
-                              radius: 35 - (i * 5),
-                            );
-                          }),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: SizedBox(
+                        height: 100,
+                        child: PieChart(
+                          PieChartData(
+                            sectionsSpace: 3,
+                            centerSpaceRadius: 25,
+                            sections: List.generate(topConditions.length, (i) {
+                              final condition = topConditions[i];
+                              return PieChartSectionData(
+                                color: summaryColors[i % summaryColors.length],
+                                value: condition.value.toDouble(),
+                                showTitle: false,
+                                radius: 30 - (i * 3),
+                              );
+                            }),
+                          ),
                         ),
                       ),
                     ),
@@ -423,7 +486,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (doctorsSnapshot.connectionState == ConnectionState.waiting &&
             !doctorsSnapshot.hasData) {
           return SizedBox(
-            height: 160,
+            height: 180,
             child: Shimmer.fromColors(
               baseColor: Colors.grey[300]!,
               highlightColor: Colors.grey[100]!,
@@ -436,7 +499,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 140,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   );
                 },
@@ -445,16 +508,21 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }
         if (doctorsSnapshot.hasError) {
-          return const SizedBox(
-              height: 160,
-              child: Center(child: Text('Could not load doctors.')));
+          return _EmptyState(
+            icon: Icons.error_outline,
+            iconColor: AppColors.error,
+            title: 'Could not load doctors',
+            subtitle: 'Please try again later.',
+            actionLabel: null,
+          );
         }
         if (!doctorsSnapshot.hasData || doctorsSnapshot.data!.isEmpty) {
           return _EmptyState(
+            icon: Icons.people_outline,
+            iconColor: AppColors.secondary,
             title: 'No consultations',
             subtitle: 'Book an appointment with a dermatologist.',
-            asset: 'assets/images/empty_consult.png',
-            onAction: () => Navigator.pushNamed(context, '/book'),
+            onAction: () => context.read<AppProvider>().changeTab(1),
             actionLabel: 'Book Now',
           );
         }
@@ -466,7 +534,7 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context, bookingsSnapshot) {
             if (bookingsSnapshot.connectionState == ConnectionState.waiting) {
               return SizedBox(
-                height: 160,
+                height: 180,
                 child: Shimmer.fromColors(
                   baseColor: Colors.grey[300]!,
                   highlightColor: Colors.grey[100]!,
@@ -480,7 +548,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 140,
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                       );
                     },
@@ -489,20 +557,29 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             }
             if (bookingsSnapshot.hasError) {
-              return const SizedBox(
-                  height: 160,
-                  child: Center(child: Text('Could not load bookings.')));
+              return _EmptyState(
+                icon: Icons.error_outline,
+                iconColor: AppColors.error,
+                title: 'Could not load bookings',
+                subtitle: 'Please try again later.',
+                actionLabel: null,
+              );
             }
             if (!bookingsSnapshot.hasData || bookingsSnapshot.data!.isEmpty) {
-              return const SizedBox(
-                  height: 160,
-                  child: Center(child: Text('No upcoming consultations.')));
+              return _EmptyState(
+                icon: Icons.event_available,
+                iconColor: AppColors.info,
+                title: 'No upcoming consultations',
+                subtitle: 'Schedule an appointment to get started.',
+                onAction: () => context.read<AppProvider>().changeTab(1),
+                actionLabel: 'Schedule Now',
+              );
             }
 
             final upcomingBookings = bookingsSnapshot.data!.take(5).toList();
 
             return SizedBox(
-              height: 160,
+              height: 180,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: upcomingBookings.length,
@@ -568,42 +645,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 3,
                 (index) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              height: 16,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              width: 100,
-                              height: 14,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  child: Container(
+                    height: 72,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),
@@ -611,94 +658,135 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }
         if (snapshot.hasError) {
-          return const Center(child: Text('Could not load history.'));
+          return _EmptyState(
+            icon: Icons.error_outline,
+            iconColor: AppColors.error,
+            title: 'Could not load history',
+            subtitle: 'Please try again later.',
+            actionLabel: null,
+          );
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return _EmptyState(
-            title: 'No history',
+            icon: Icons.history,
+            iconColor: AppColors.accent,
+            title: 'No scan history',
             subtitle: 'Your previous scans will appear here.',
-            asset: 'assets/images/empty_history.png',
-            onAction: () => context.read<AppProvider>().changeTab(1),
-            actionLabel: 'Scan Now',
+            onAction: () => context.read<AppProvider>().changeTab(2),
+            actionLabel: 'Start Scan',
           );
         }
 
         final latestRecords = snapshot.data!.take(5).toList();
 
-        return ListView.builder(
+        return ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: latestRecords.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
             final record = latestRecords[index];
             final firstImage = record.imageResults.isNotEmpty
                 ? record.imageResults.first.imageUrl
                 : null;
 
-            return ListTile(
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        ScanHistoryDetailScreen(record: record),
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppColors.primary.withOpacity(0.1),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
-                );
-              },
-              leading: firstImage != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: CachedNetworkImage(
-                        imageUrl: firstImage,
-                        width: 56,
-                        height: 56,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => const SizedBox(
-                            width: 56,
-                            height: 56,
-                            child: Center(
-                                child: CircularProgressIndicator(
-                                    strokeWidth: 2.0))),
-                        errorWidget: (context, url, error) => Container(
+                ],
+              ),
+              child: ListTile(
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ScanHistoryDetailScreen(record: record),
+                    ),
+                  );
+                },
+                leading: firstImage != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: CachedNetworkImage(
+                          imageUrl: firstImage,
                           width: 56,
                           height: 56,
-                          color: Colors.grey[200],
-                          child: const Icon(Icons.image_not_supported,
-                              color: Colors.grey),
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            width: 56,
+                            height: 56,
+                            color: AppColors.champagne,
+                            child: const Center(
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2.0)),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            width: 56,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              color: AppColors.champagne,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(Icons.image_not_supported,
+                                color: AppColors.textSecondary),
+                          ),
                         ),
+                      )
+                    : Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: AppColors.champagne,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(Icons.image_not_supported,
+                            color: AppColors.textSecondary),
                       ),
-                    )
-                  : Container(
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(Icons.image_not_supported,
-                          color: Colors.grey),
+                title: Text(
+                  record.summary['skinConditions'] ?? 'N/A',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Row(
+                  children: [
+                   Icon(Icons.calendar_today,
+                        size: 14, color: AppColors.textSecondary),
+                    const SizedBox(width: 4),
+                    Text(
+                      DateFormat.yMMMMd().format(record.scanDate),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary),
                     ),
-              title: Text(
-                record.summary['skinConditions'] ?? 'N/A',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                  ],
+                ),
+                trailing: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.arrow_forward_ios,
+                      size: 14, color: AppColors.primary),
+                ),
               ),
-              subtitle: Text(
-                DateFormat.yMMMMd().format(record.scanDate),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.7)),
-              ),
-              trailing: Icon(Icons.arrow_forward_ios,
-                  size: 16, color: Colors.grey[400]),
             );
           },
         );
@@ -719,13 +807,43 @@ class _SummaryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          CircleAvatar(radius: 5, backgroundColor: color),
-          const SizedBox(width: 8),
-          Expanded(child: Text(text)),
-          Text(value.toString()),
+          Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              value.toString(),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                color: color,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -746,52 +864,104 @@ class _ConsultationCard extends StatelessWidget {
     return Container(
       width: 140,
       decoration: BoxDecoration(
-        color: theme.brightness == Brightness.light
-            ? const Color(0xFFFEFEFE)
-            : theme.cardTheme.color,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary.withOpacity(0.5)),
+        border: Border.all(color: Colors.grey.shade200, width: 1),
         boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
-              ),
-              child: doctor.imageUrl.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: doctor.imageUrl,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
-                    )
-                  : Image.asset(
-                      'assets/images/default_avatar.png',
-                      fit: BoxFit.cover,
-                      width: double.infinity,
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                  child: doctor.imageUrl.isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: doctor.imageUrl,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          errorWidget: (context, url, error) => Container(
+                            color: AppColors.champagne,
+                            child: Icon(Icons.person,
+                                color: AppColors.textSecondary, size: 40),
+                          ),
+                        )
+                      : Container(
+                          color: AppColors.champagne,
+                          child: Center(
+                            child: Icon(Icons.person,
+                                color: AppColors.textSecondary, size: 40),
+                          ),
+                        ),
+                ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      gradient: AppColors.primaryGradient,
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.star, color: Colors.white, size: 12),
+                        const SizedBox(width: 2),
+                        Text(
+                          doctor.rating.toStringAsFixed(1),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Dr. ${doctor.displayName}',
-                    style: theme.textTheme.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis),
-                Text(
-                  DateFormat('EEE, MMM d').format(booking.appointmentDate),
-                  style: theme.textTheme.bodySmall,
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(Icons.calendar_today,
+                        size: 12, color: AppColors.textSecondary),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        DateFormat('MMM d').format(booking.appointmentDate),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -802,20 +972,20 @@ class _ConsultationCard extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Reusable empty‑state widget used throughout HomeScreen when a stream has no data.
-// ---------------------------------------------------------------------------
+// Reusable empty-state widget used throughout HomeScreen when a stream has no data
 class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
   final String title;
   final String subtitle;
-  final String asset; // path to PNG/SVG asset
   final VoidCallback? onAction;
   final String? actionLabel;
 
   const _EmptyState({
+    required this.icon,
+    required this.iconColor,
     required this.title,
     required this.subtitle,
-    required this.asset,
     this.onAction,
     this.actionLabel,
     Key? key,
@@ -825,42 +995,58 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.grey.shade100, Colors.grey.shade200],
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.grey.shade200,
+          width: 1,
         ),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: const Offset(0, 2)),
-        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-  
-          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: iconColor, size: 32),
+          ),
+          const SizedBox(height: 16),
           Text(title,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
-              )),
-          const SizedBox(height: 4),
+                color: AppColors.textPrimary,
+              ),
+              textAlign: TextAlign.center),
+          const SizedBox(height: 6),
           Text(subtitle,
-              style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
               textAlign: TextAlign.center),
           if (onAction != null && actionLabel != null) ...[
-            const SizedBox(height: 12),
-            ElevatedButton(
+            const SizedBox(height: 20),
+            OutlinedButton.icon(
               onPressed: onAction,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                foregroundColor: theme.colorScheme.primary,
-                side: BorderSide(color: theme.colorScheme.primary),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                elevation: 0,
+              icon: Icon(Icons.add, size: 18),
+              label: Text(actionLabel!),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: iconColor,
+                side: BorderSide(color: iconColor),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                textStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
               ),
-              child: Text(actionLabel!),
             ),
           ],
         ],
