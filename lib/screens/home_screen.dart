@@ -621,6 +621,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   return _ConsultationCard(
                     doctor: doctor,
                     booking: booking,
+                    onTap: () => _showConsultationDetails(context, doctor, booking),
                   );
                 },
                 separatorBuilder: (context, index) => const SizedBox(width: 12),
@@ -629,6 +630,134 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         );
       },
+    );
+  }
+
+  void _showConsultationDetails(
+      BuildContext context, DoctorModel doctor, BookingModel booking) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Doctor Image
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.primary, width: 2),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(40),
+                  child: doctor.imageUrl.isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: doctor.imageUrl,
+                          fit: BoxFit.cover,
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.person, size: 40),
+                        )
+                      : const Icon(Icons.person, size: 40),
+                ),
+              ),
+              const SizedBox(height: 12),
+              
+              // Doctor Name & Specialty
+              Text(
+                'Dr. ${doctor.displayName}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                doctor.specialty,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              
+              // Appointment Details
+              _buildDetailRow(Icons.calendar_today, 'Date',
+                  DateFormat('MMMM d, yyyy').format(booking.appointmentDate)),
+              const SizedBox(height: 10),
+              _buildDetailRow(Icons.access_time, 'Time', booking.appointmentTime),
+              const SizedBox(height: 10),
+              _buildDetailRow(Icons.videocam, 'Type', booking.type ?? 'Online Consultation'),
+              const SizedBox(height: 10),
+              _buildDetailRow(Icons.info_outline, 'Status', booking.status),
+              
+              if (booking.condition != null && booking.condition!.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                _buildDetailRow(Icons.medical_services, 'Condition', booking.condition!),
+              ],
+               if (booking.notes != null && booking.notes!.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                _buildDetailRow(Icons.note, 'Notes', booking.notes!),
+              ],
+
+              const SizedBox(height: 24),
+              
+              // Close Button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: const Text('Close'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: AppColors.primary),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -853,120 +982,124 @@ class _SummaryItem extends StatelessWidget {
 class _ConsultationCard extends StatelessWidget {
   final DoctorModel doctor;
   final BookingModel booking;
+  final VoidCallback onTap;
 
   const _ConsultationCard(
-      {required this.doctor, required this.booking, Key? key})
+      {required this.doctor, required this.booking, required this.onTap, Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      width: 140,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                  ),
-                  child: doctor.imageUrl.isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: doctor.imageUrl,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          errorWidget: (context, url, error) => Container(
-                            color: AppColors.champagne,
-                            child: Icon(Icons.person,
-                                color: AppColors.textSecondary, size: 40),
-                          ),
-                        )
-                      : Container(
-                          color: AppColors.champagne,
-                          child: Center(
-                            child: Icon(Icons.person,
-                                color: AppColors.textSecondary, size: 40),
-                          ),
-                        ),
-                ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.star, color: Colors.white, size: 12),
-                        const SizedBox(width: 2),
-                        Text(
-                          doctor.rating.toStringAsFixed(1),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 140,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Dr. ${doctor.displayName}',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(Icons.calendar_today,
-                        size: 12, color: AppColors.textSecondary),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        DateFormat('MMM d').format(booking.appointmentDate),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                    child: doctor.imageUrl.isNotEmpty
+                        ? CachedNetworkImage(
+                            imageUrl: doctor.imageUrl,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            errorWidget: (context, url, error) => Container(
+                              color: AppColors.champagne,
+                              child: Icon(Icons.person,
+                                  color: AppColors.textSecondary, size: 40),
+                            ),
+                          )
+                        : Container(
+                            color: AppColors.champagne,
+                            child: Center(
+                              child: Icon(Icons.person,
+                                  color: AppColors.textSecondary, size: 40),
+                            ),
+                          ),
+                  ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.star, color: Colors.white, size: 12),
+                          const SizedBox(width: 2),
+                          Text(
+                            doctor.rating.toStringAsFixed(1),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Dr. ${doctor.displayName}',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_today,
+                          size: 12, color: AppColors.textSecondary),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          DateFormat('MMM d').format(booking.appointmentDate),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
