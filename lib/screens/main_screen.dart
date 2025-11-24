@@ -4,6 +4,7 @@ import 'consultations_screen.dart';
 import 'scan_main_screen.dart';
 import 'notifications_screen.dart';
 import 'more_screen.dart';
+import 'conversation_list_screen.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/brand_name.dart';
 import '../widgets/profile_avatar.dart';
@@ -12,6 +13,7 @@ import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../providers/app_provider.dart';
 import 'scan_history_screen.dart';
+import '../utils/app_colors.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -25,7 +27,7 @@ class _MainScreenState extends State<MainScreen> {
     const HomeScreen(),
     const ConsultationsScreen(),
     const ScanScreen(),
-    const NotificationsScreen(),
+    const ConversationListScreen(),
     const ScanHistoryScreen(),
     const MoreScreen(),
   ];
@@ -55,8 +57,15 @@ class _MainScreenState extends State<MainScreen> {
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {},
+              icon: const Icon(Icons.notifications, color: AppColors.primary),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NotificationsScreen(),
+                  ),
+                );
+              },
               padding: EdgeInsets.zero,
             ),
             GestureDetector(

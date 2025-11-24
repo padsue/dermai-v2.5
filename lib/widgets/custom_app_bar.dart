@@ -51,26 +51,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: actions!.map((widget) {
-                  if (widget is IconButton && widget.icon is Icon) {
-                    return Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.mark_chat_unread,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const ConversationListScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  }
                   return Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: widget,
