@@ -35,6 +35,9 @@ class BookingModel extends HiveObject {
   @HiveField(9)
   final String? notes;
 
+  @HiveField(10)
+  final String? cancellationReason;
+
   BookingModel({
     required this.id,
     required this.userId,
@@ -46,6 +49,7 @@ class BookingModel extends HiveObject {
     this.condition,
     this.type,
     this.notes,
+    this.cancellationReason,
   });
 
   factory BookingModel.fromMap(Map<String, dynamic> data, String documentId) {
@@ -60,6 +64,7 @@ class BookingModel extends HiveObject {
       condition: data['condition'],
       type: data['type'],
       notes: data['notes'],
+      cancellationReason: data['cancellationReason'],
     );
   }
 
@@ -74,6 +79,7 @@ class BookingModel extends HiveObject {
       'condition': condition,
       'type': type,
       'notes': notes,
+      'cancellationReason': cancellationReason,
     };
   }
 }

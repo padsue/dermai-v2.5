@@ -715,10 +715,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 valueColor: _getStatusColor(booking.status),
               ),
               
-              if (booking.condition != null && booking.condition!.isNotEmpty) ...[
-                const SizedBox(height: 10),
-                _buildDetailRow(Icons.medical_services, 'Condition', booking.condition!),
-              ],
+
                if (booking.notes != null && booking.notes!.isNotEmpty) ...[
                 const SizedBox(height: 10),
                 _buildDetailRow(Icons.note, 'Notes', booking.notes!),
@@ -726,25 +723,148 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 24),
               
-              // Close Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              // Action Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _showCancellationDialog(context, booking);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.error,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: const Text('Cancel'),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: const Text('Close'),
-                ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.primary,
+                        side: const BorderSide(color: AppColors.primary),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: const Text('Close'),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showCancellationDialog(BuildContext context, BookingModel booking) {
+    final reasonController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cancel Appointment'),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Are you sure you want to cancel this appointment? Please provide a reason.',
+                style: TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: reasonController,
+                decoration: InputDecoration(
+                  labelText: 'Reason for cancellation',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[50],
+                ),
+                maxLines: 3,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please enter a reason';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Back'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (formKey.currentState!.validate()) {
+                try {
+                  // Show loading indicator
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+
+                  await context.read<BookingRepository>().cancelBooking(
+                        booking,
+                        reasonController.text.trim(),
+                      );
+
+                  if (context.mounted) {
+                    // Close loading
+                    Navigator.pop(context);
+                    // Close dialog
+                    Navigator.pop(context);
+                    
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Appointment cancelled successfully'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    // Close loading
+                    Navigator.pop(context);
+                    
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Failed to cancel: $e'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Cancel Appointment'),
+          ),
+        ],
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }

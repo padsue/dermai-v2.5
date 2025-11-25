@@ -11,4 +11,8 @@ class BookingService {
   String getNewBookingId() {
     return _db.collection('bookings').doc().id;
   }
+
+  Future<void> updateBooking(BookingModel booking) async {
+    await _db.collection('bookings').doc(booking.id).update(booking.toMap());
+  }
 }

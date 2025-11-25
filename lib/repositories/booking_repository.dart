@@ -26,4 +26,27 @@ class BookingRepository {
   Stream<List<BookingModel>> getUpcomingBookingsStream(String userId) {
     return _streamService.getUpcomingBookingsStream(userId);
   }
+
+  Future<void> cancelBooking(BookingModel booking, String reason) async {
+    // 1. Update booking object
+    final updatedBooking = BookingModel(
+      id: booking.id,
+      userId: booking.userId,
+      doctorId: booking.doctorId,
+      appointmentDate: booking.appointmentDate,
+      appointmentTime: booking.appointmentTime,
+      status: 'Cancelled',
+      createdAt: booking.createdAt,
+      condition: booking.condition,
+      type: booking.type,
+      notes: booking.notes,
+      cancellationReason: reason,
+    );
+
+    // 2. Update in Firestore
+    await _bookingService.updateBooking(updatedBooking);
+
+    // 3. Update in Cache
+    await _cacheService.cacheBooking(updatedBooking);
+  }
 }
