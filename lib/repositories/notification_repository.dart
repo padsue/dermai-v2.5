@@ -38,13 +38,8 @@ class NotificationRepository {
     // Save to Firestore
     await newDoc.set(notification.toMap());
 
-    // Only trigger local push notification for booking_pending type
-    if (type == 'booking_pending') {
-      await _pushNotificationService.showNotification(
-        title: 'Booking Sent',
-        body: 'Your appointment request has been sent successfully.',
-      );
-    }
+    // Local notification is now handled by the global listener in NotificationListenerWrapper
+    // triggered by the Firestore document creation.
   }
 
   Stream<List<NotificationModel>> getNotificationsStreamForUser(String userId) {

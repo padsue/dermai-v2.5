@@ -14,6 +14,7 @@ import '../services/auth_service.dart';
 import '../providers/app_provider.dart';
 import 'scan_history_screen.dart';
 import '../utils/app_colors.dart';
+import '../widgets/notification_listener_wrapper.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -81,9 +82,11 @@ class _MainScreenState extends State<MainScreen> {
           ],
           showBackButton: false,
         ),
-        body: IndexedStack(
-          index: appProvider.currentIndex,
-          children: _screens,
+        body: NotificationListenerWrapper(
+          child: IndexedStack(
+            index: appProvider.currentIndex,
+            children: _screens,
+          ),
         ),
         bottomNavigationBar: SafeArea(
           top: false,
